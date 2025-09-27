@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+/* PrimeNG & PrimeIcons */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Configuración para compatibilidad PrimeNG + Tailwind */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  /* Estilos personalizados para componentes */
+  .filter-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+  
+  .filter-btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+  
+  .filter-btn-secondary {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  }
+  
+  .filter-btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700;
+  }
+  
+  .custom-file-upload {
+    @apply border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors;
+  }
+}

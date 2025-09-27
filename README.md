@@ -1,27 +1,101 @@
-# Pagos
+# Sistema de Pagos - Prueba Técnica Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+## Descripción del Proyecto
 
-## Development server
+Sistema web desarrollado en Angular 17 para la gestión de pagos empresariales, con funcionalidades completas de CRUD, filtrado avanzado, control de accesos y exportación de datos. Implementa una arquitectura moderna con componentes standalone, PrimeNG para UI y TailwindCSS para estilos.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Tecnologías Utilizadas
 
-## Code scaffolding
+### Frontend
+- **Angular 17** - Framework principal
+- **TypeScript** - Tipado estático y desarrollo robusto
+- **RxJS** - Programación reactiva y manejo de estado
+- **PrimeNG 17** - Componentes UI profesionales
+- **TailwindCSS 3.x** - Framework de utilidades CSS
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Backend & Herramientas
+- **JSON Server** - Mock API para desarrollo
+- **Angular CLI** - Herramientas de desarrollo
+- **Node.js 18+** - Runtime de JavaScript
+- **npm** - Gestor de paquetes
 
-## Build
+## Instalación y Configuración
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Prerrequisitos
+- **Node.js 18+** 
+- **npm 9+**
+- **Angular CLI 17+**
 
-## Running unit tests
+### Instalación
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+#### 1. Instalar JSON Server
+```bash
+npm install -D json-server
+```
 
-## Running end-to-end tests
+#### 2. Configurar scripts en package.json
+```json
+{
+  "scripts": {
+    "start": "ng serve",
+    "json-server": "json-server --watch db.json --port 3001",
+    "build": "ng build",
+    "test": "ng test"
+  }
+}
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+#### 3. Iniciar la aplicación
 
-## Further help
+**IMPORTANTE**: Es necesario ejecutar JSON Server ANTES que Angular para que la aplicación funcione correctamente.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```bash
+# Terminal 1: Iniciar JSON Server (PRIMERO)
+npm run json-server
+
+# Terminal 2: Iniciar Angular (DESPUÉS)
+npm start
+```
+
+#### 4. Acceder a la aplicación
+- **Frontend**: http://localhost:4200
+- **API**: http://localhost:3001
+
+**Nota**: Si no se ejecuta JSON Server primero, la aplicación mostrará errores de conexión y no cargará los datos correctamente.
+
+## Arquitectura del Proyecto
+
+```
+src/
+├── app/
+│   ├── layout/                 # Componentes de layout
+│   │   ├── layout.component.*
+│   │   ├── menu-bar/           # Barra de navegación
+│   │   └── footer/             # Pie de página
+│   ├── pagos/                  # Módulo principal
+│   │   ├── models/             # Interfaces y tipos
+│   │   │   └── pago.model.ts
+│   │   ├── services/           # Servicios de negocio
+│   │   │   ├── pagos.service.ts
+│   │   │   └── access.service.ts
+│   │   ├── pages/              # Páginas principales
+│   │   │   ├── pagos-list/     # Lista de pagos
+│   │   │   └── pago-form/      # Formulario de pagos
+│   │   └── pagos.router.ts     # Rutas del módulo
+│   └── app.module.ts           # Módulo principal
+├── assets/                     # Recursos estáticos
+└── styles.css                 # Estilos globales
+```
+
+## Control de Accesos
+
+### Roles Implementados
+- **ADMIN**: Acceso completo (crear, editar, eliminar, ver)
+- **EDITOR**: Crear y editar pagos
+- **VIEWER**: Solo lectura
+
+## Limitaciones Conocidas
+
+### Técnicas
+- **Backend**: Solo JSON Server (desarrollo)
+- **Autenticación**: Mock de usuarios

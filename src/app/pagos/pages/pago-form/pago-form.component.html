@@ -1,0 +1,330 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ formTitle }}</h1>
+        <p class="text-gray-600">Complete la información del pago de manera detallada</p>
+      </div>
+      <div>
+        <button 
+          type="button"
+          (click)="cancel()"
+          class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors flex items-center">
+          <i class="pi pi-times mr-2"></i>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    
+    <!-- Información Básica -->
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-gray-900 mb-2">Información Básica</h2>
+      <p class="text-gray-600 text-sm">Datos principales del pago</p>
+    </div>
+    
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- ID (solo lectura) -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">
+            ID del Pago
+          </label>
+          <input 
+            type="text" 
+            formControlName="id"
+            readonly
+            class="w-full px-4 py-3 text-gray-600 font-mono text-sm focus:outline-none">
+        </div>
+
+        <!-- Fecha -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Fecha <span class="text-red-500">*</span>
+          </label>
+          <p-calendar 
+            formControlName="fecha"
+            [disabled]="isReadOnly"
+            dateFormat="dd/mm/yy"
+            placeholder="Seleccionar fecha"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            styleClass="w-full border-2 py-3 px-4 border-gray-200 rounded-xl">
+          </p-calendar>
+          <div *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched" 
+               class="flex items-center text-red-500 text-sm">
+            <i class="pi pi-exclamation-triangle mr-1"></i>
+            La fecha es obligatoria
+          </div>
+        </div>
+
+        <!-- Empresa -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Empresa <span class="text-red-500">*</span>
+          </label>
+          <p-dropdown 
+            formControlName="empresa"
+            [options]="empresaOptions"
+            [disabled]="isReadOnly"
+            placeholder="Seleccionar empresa"
+            [filter]="true"
+            filterPlaceholder="Buscar empresa..."
+            styleClass="w-full border-2  border-gray-200 rounded-xl">
+          </p-dropdown>
+          <div *ngIf="form.get('empresa')?.invalid && form.get('empresa')?.touched" 
+               class="flex items-center text-red-500 text-sm">
+            <i class="pi pi-exclamation-triangle mr-1"></i>
+            La empresa es obligatoria
+          </div>
+        </div>
+
+        <!-- Tercero -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">
+            <i class="pi pi-user mr-2 text-blue-500"></i>
+            Tercero <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            formControlName="tercero"
+            [readonly]="isReadOnly"
+            placeholder="Nombre del tercero"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+          <div *ngIf="form.get('tercero')?.invalid && form.get('tercero')?.touched" 
+               class="space-y-1">
+            <div *ngIf="form.get('tercero')?.errors?.['required']" class="flex items-center text-red-500 text-sm">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El tercero es obligatorio
+            </div>
+            <div *ngIf="form.get('tercero')?.errors?.['minlength']" class="flex items-center text-red-500 text-sm">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              Mínimo 3 caracteres
+            </div>
+          </div>
+        </div>
+
+        <!-- Valor de Operación -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">
+            <i class="pi pi-dollar mr-2 text-blue-500"></i>
+            Valor de Operación <span class="text-red-500">*</span>
+          </label>
+          <p-inputNumber 
+            formControlName="valorOperacion"
+            [disabled]="isReadOnly"
+            mode="currency"
+            currency="COP"
+            locale="es-CO"
+            placeholder="0"
+            [min]="1"
+            styleClass="w-full border-2 py-3 px-4 border-gray-200 rounded-xl">
+          </p-inputNumber>
+          <div *ngIf="form.get('valorOperacion')?.invalid && form.get('valorOperacion')?.touched" 
+               class="space-y-1">
+            <div *ngIf="form.get('valorOperacion')?.errors?.['required']" class="flex items-center text-red-500 text-sm">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El valor es obligatorio
+            </div>
+            <div *ngIf="form.get('valorOperacion')?.errors?.['min']" class="flex items-center text-red-500 text-sm">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El valor debe ser mayor a 0
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- Información Adicional -->
+       <div class="px-6 py-4 border-b border-gray-200 mt-6">
+         <h2 class="text-xl font-semibold text-gray-900 mb-2">Información Adicional</h2>
+         <p class="text-gray-600 text-sm">Detalles complementarios del pago</p>
+       </div>
+       
+       <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Área de Operación -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Área de Operación
+            </label>
+            <p-dropdown 
+              formControlName="areaOperacion"
+              [options]="areaOperacionOptions"
+              [disabled]="isReadOnly"
+              placeholder="Seleccionar área"
+              [showClear]="true"
+              styleClass="w-full border-2 border-gray-200 rounded-xl">
+            </p-dropdown>
+          </div>
+
+          <!-- Rubro -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Rubro
+            </label>
+            <p-dropdown 
+              formControlName="rubro"
+              [options]="rubroOptions"
+              [disabled]="isReadOnly"
+              placeholder="Seleccionar rubro"
+              [showClear]="true"
+              styleClass="w-full border-2 border-gray-200 rounded-xl">
+            </p-dropdown>
+          </div>
+
+          <!-- Estado del Pago -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Estado del Pago <span class="text-red-500">*</span>
+            </label>
+            <p-dropdown 
+              formControlName="estadoPago"
+              [options]="estadoOptions"
+              [disabled]="isReadOnly"
+              placeholder="Seleccionar estado"
+              styleClass="w-full border-2 border-gray-200 rounded-xl">
+            </p-dropdown>
+            <div *ngIf="form.get('estadoPago')?.invalid && form.get('estadoPago')?.touched" 
+                 class="flex items-center text-red-500 text-sm">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              El estado es obligatorio
+            </div>
+          </div>
+
+          <!-- Tipo de Operación -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Tipo de Operación
+            </label>
+            <p-dropdown 
+              formControlName="ingresoOGasto"
+              [options]="[{label: 'INGRESO', value: 'INGRESO'}, {label: 'GASTO', value: 'GASTO'}]"
+              [disabled]="isReadOnly"
+              placeholder="Seleccionar tipo"
+              styleClass="w-full border-2 border-gray-200 rounded-xl">
+            </p-dropdown>
+          </div>
+
+          <!-- Forma de Pago -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Forma de Pago
+            </label>
+            <p-dropdown 
+              formControlName="formaPago"
+              [options]="formaPagoOptions"
+              [disabled]="isReadOnly"
+              placeholder="Seleccionar forma de pago"
+              styleClass="w-full border-2 border-gray-200 rounded-xl">
+            </p-dropdown>
+          </div>
+
+          <!-- Tiene Presupuesto -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Presupuesto
+            </label>
+            <div class="flex items-center p-4">
+              <p-checkbox 
+                formControlName="tienePresupuesto"
+                [disabled]="isReadOnly"
+                [binary]="true"
+                inputId="tienePresupuesto"
+                styleClass="mr-3 border-2 border-gray-200 rounded-xl">
+              </p-checkbox>
+              <label for="tienePresupuesto" class="text-sm font-medium text-gray-700 cursor-pointer">
+                Tiene presupuesto asignado
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- Archivos Adjuntos -->
+       <div class="px-6 py-4 border-b border-gray-200">
+         <h2 class="text-xl font-semibold text-gray-900 mb-2">Archivos Adjuntos</h2>
+         <p class="text-gray-600 text-sm">Documentos de soporte para el pago</p>
+       </div>
+       
+       <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Factura -->
+          <div class="space-y-4">
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-file-pdf text-red-500 text-xl"></i>
+              <label class="text-lg font-semibold text-gray-700">Factura</label>
+            </div>
+            <button 
+              type="button"
+              (click)="openFileDialog('factura')"
+              [disabled]="isReadOnly"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="pi pi-upload mr-2"></i>
+              Seleccionar Factura
+            </button>
+            <div *ngIf="form.get('facturaUrl')?.value" class="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <i class="pi pi-check-circle text-green-500"></i>
+              <span class="text-sm text-green-700 font-medium">{{ form.get('facturaUrl')?.value || '' }}</span>
+            </div>
+          </div>
+
+          <!-- Soporte -->
+          <div class="space-y-4">
+            <div class="flex items-center space-x-2">
+              <i class="pi pi-file text-blue-500 text-xl"></i>
+              <label class="text-lg font-semibold text-gray-700">Soporte</label>
+            </div>
+            <button 
+              type="button"
+              (click)="openFileDialog('soporte')"
+              [disabled]="isReadOnly"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="pi pi-upload mr-2"></i>
+              Seleccionar Soporte
+            </button>
+            <div *ngIf="form.get('soporteUrl')?.value" class="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <i class="pi pi-check-circle text-green-500"></i>
+              <span class="text-sm text-green-700 font-medium">{{ form.get('soporteUrl')?.value || '' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- Trazabilidad (solo en modo view) -->
+
+       <!-- Botones de acción -->
+       <div class="px-6 py-4 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div class="flex items-center space-x-2 text-sm text-gray-600">
+            <span *ngIf="!isFormValid && form.touched">Complete todos los campos obligatorios</span>
+            <span *ngIf="isFormValid" class="text-green-600">
+              <i class="pi pi-check-circle mr-1"></i>
+              Formulario válido
+            </span>
+          </div>
+          
+          <div class="flex gap-3">
+            <button 
+              *ngIf="!isReadOnly"
+              type="submit"
+              [disabled]="!isFormValid"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="pi pi-plus mr-2" *ngIf="mode === 'create'"></i>
+              <i class="pi pi-save mr-2" *ngIf="mode === 'edit'"></i>
+              {{ mode === 'create' ? 'Crear Pago' : 'Actualizar Pago' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+</div>

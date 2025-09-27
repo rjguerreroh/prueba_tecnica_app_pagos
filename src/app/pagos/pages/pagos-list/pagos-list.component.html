@@ -1,0 +1,247 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Lista de Pagos</h1>
+    <p class="text-gray-600">Visualiza todos los pagos del sistema</p>
+  </div>
+
+  <!-- Panel de búsqueda y acciones -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+    <!-- Búsqueda general -->
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">Búsqueda general</label>
+      <input type="text" pInputText [(ngModel)]="globalFilter" (input)="onGlobalFilter($event)"
+        placeholder="Buscar por tercero, rubro, empresa..."
+        class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200" />
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button (click)="clearFilters()" class="filter-btn filter-btn-secondary">
+        <i class="pi pi-refresh mr-2"></i>
+        Limpiar filtros
+      </button>
+      <button (click)="exportFiltered()" class="filter-btn filter-btn-success">
+        <i class="pi pi-download mr-2"></i>
+        Exportar CSV
+      </button>
+      <button *ngIf="access.canCreate()" (click)="createPago()" class="filter-btn filter-btn-primary" type="button">
+        <i class="pi pi-plus mr-2"></i>
+        Crear Pago
+      </button>
+    </div>
+
+    <!-- Resumen de totales -->
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="text-sm text-gray-500">
+          <div>Mostrando {{ filteredPagos.length }} de {{ totalPagos }} pagos</div>
+          <div class="font-semibold text-green-600">
+            Total: {{ getTotalValue() | currency:'COP':'symbol':'1.0-0' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de pagos con PrimeNG -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <p-table 
+      #dt
+      [value]="filteredPagos" 
+      [loading]="loading$ | async"
+      [paginator]="true" 
+      [rows]="rows"
+      [totalRecords]="totalPagos"
+      [first]="first"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} pagos"
+      [rowsPerPageOptions]="[10, 20, 30, 50]"
+      [showFirstLastIcon]="true"
+      [showPageLinks]="true"
+      styleClass="p-datatable-striped"
+      [globalFilterFields]="['id','empresa','tercero','rubro','areaOperacion']"
+      (onPageChange)="onPageChange($event)">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">
+            ID
+          </th>
+          <th pSortableColumn="fecha" styleClass="w-56">
+            <div class="flex items-center gap-2">
+              <span>Fecha</span>
+              <p-sortIcon field="fecha"></p-sortIcon>
+            </div>
+          </th>
+          <th>Empresa</th>
+          <th>Área Operación</th>
+          <th>Rubro</th>
+          <th>Tercero</th>
+          <th pSortableColumn="valorOperacion">
+            <div class="flex items-center gap-2">
+              <span>Valor</span>
+              <p-sortIcon field="valorOperacion"></p-sortIcon>
+            </div>
+          </th>
+          <th>Estado</th>
+          <th>Ingreso/Gasto</th>
+          <th>Forma de Pago</th>
+          <th>Presupuesto</th>
+          <th></th>
+        </tr>
+        <tr>
+          <th>
+
+          </th>
+          <th>
+            <p-calendar
+              placeholder="Filtrar por fecha"
+              [showClear]="true"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              (onSelect)="onDateFilter($event)"
+              (onClear)="onDateFilter(null)"
+              [appendTo]="'body'"
+              styleClass="w-full">
+            </p-calendar>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="empresaOptions"
+              placeholder="Seleccionar empresa"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'empresa')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="areaOperacionOptions"
+              placeholder="Seleccionar área"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'areaOperacion')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="rubroOptions"
+              placeholder="Seleccionar rubro"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'rubro')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+
+          </th>
+          <th>
+           
+          </th>
+          <th>
+            <p-dropdown
+              [options]="estadoOptions"
+              placeholder="Seleccionar estado"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'estadoPago')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="[{label: 'INGRESO', value: 'INGRESO'}, {label: 'GASTO', value: 'GASTO'}]"
+              placeholder="Seleccionar tipo"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'ingresoOGasto')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="formaPagoOptions"
+              placeholder="Seleccionar forma"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'formaPago')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th>
+            <p-dropdown
+              [options]="[{label: 'Sí', value: true}, {label: 'No', value: false}]"
+              placeholder="Seleccionar presupuesto"
+              [showClear]="true"
+              (onChange)="onDropdownFilter($event, 'tienePresupuesto')"
+              class="w-full">
+            </p-dropdown>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-pago>
+        <tr>
+          <td>{{ pago.id }}</td>
+          <td>{{ pago.fecha | date:'dd/MM/yyyy' }}</td>
+          <td>{{ pago.empresa }}</td>
+          <td>{{ pago.areaOperacion || '-' }}</td>
+          <td>{{ pago.rubro || '-' }}</td>
+          <td>{{ pago.tercero }}</td>
+          <td>{{ pago.valorOperacion | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td>
+            <span [ngClass]="getEstadoBadgeClass(pago.estadoPago)" 
+                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
+              {{ pago.estadoPago }}
+            </span>
+          </td>
+          <td>{{ pago.ingresoOGasto || '-' }}</td>
+          <td>{{ pago.formaPago || '-' }}</td>
+          <td>
+            <span [ngClass]="pago.tienePresupuesto ? 'text-green-600' : 'text-gray-400'">
+              {{ pago.tienePresupuesto ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <div class="flex gap-2">
+              <button 
+                (click)="viewPago(pago)"
+                pButton
+                pRipple
+                icon="pi pi-eye"
+                class="p-button-rounded p-button-text p-button-sm"
+                pTooltip="Ver detalles">
+              </button>
+              <button 
+                (click)="editPago(pago)"
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-sm"
+                pTooltip="Editar">
+              </button>
+              <button 
+                (click)="deletePago(pago)"
+                *ngIf="access.canDelete()"
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                pTooltip="Eliminar">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="11" class="text-center py-12">
+            <i class="pi pi-inbox text-4xl text-gray-400 mb-4 block"></i>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No hay pagos registrados</h3>
+            <p class="text-gray-500">Los pagos aparecerán aquí cuando se carguen desde el servicio</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
