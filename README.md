@@ -61,7 +61,7 @@ npm start
 - **Frontend**: http://localhost:4200
 - **API**: http://localhost:3001
 
-**Nota**: Si no se ejecuta JSON Server primero, la aplicación mostrará errores de conexión y no cargará los datos correctamente.
+**Nota**: La aplicación requiere que JSON Server esté ejecutándose para funcionar correctamente. Sin el servidor, la aplicación mostrará errores de conexión.
 
 ## Arquitectura del Proyecto
 

@@ -27,7 +27,7 @@ export class AccessService {
     this.loadUserPermissions();
   }
 
-  private loadUserPermissions(): void {
+  loadUserPermissions(): void {
     // En un caso real, esto vendría de un servicio de autenticación
     const userRole = localStorage.getItem('userRole') || 'solicitante';
     

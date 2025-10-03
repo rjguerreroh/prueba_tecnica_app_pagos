@@ -11,6 +11,15 @@ import { AccessService } from '../../pagos/services/access.service';
 export class MenuBarComponent implements OnInit {
   items: MenuItem[] = [];
   userRole: string = '';
+  
+  // Opciones para el selector de rol
+  roleOptions = [
+    { label: 'Administrador', value: 'admin' },
+    { label: 'Autorizador', value: 'autorizador' },
+    { label: 'Solicitante', value: 'solicitante' }
+  ];
+  
+  selectedRole: string = 'admin';
 
   constructor(
     private router: Router,
@@ -18,6 +27,9 @@ export class MenuBarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Cargar rol actual desde localStorage
+    const currentRole = localStorage.getItem('userRole') || 'admin';
+    this.selectedRole = currentRole;
     this.userRole = this.access.getCurrentRole();
     this.items = [
       {
@@ -79,5 +91,16 @@ export class MenuBarComponent implements OnInit {
   private exportData(): void {
     // Lógica para exportar datos
     console.log('Exportando datos...');
+  }
+
+  // Método para cambiar el rol del usuario
+  onRoleChange(): void {
+    localStorage.setItem('userRole', this.selectedRole);
+    // Recargar los permisos del servicio
+    this.access.loadUserPermissions();
+    this.userRole = this.access.getCurrentRole();
+    
+    // Recargar la página para aplicar los nuevos permisos
+    window.location.reload();
   }
 }

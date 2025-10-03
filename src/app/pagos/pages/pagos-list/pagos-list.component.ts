@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -9,8 +9,7 @@ import { AccessService } from '../../services/access.service';
 
 @Component({
   selector: 'app-pagos-list',
-  templateUrl: './pagos-list.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './pagos-list.component.html'
 })
 export class PagosListComponent implements OnInit {
   @ViewChild('dt') table!: Table;
@@ -71,8 +70,7 @@ export class PagosListComponent implements OnInit {
     private msg: MessageService,
     private confirm: ConfirmationService,
     private router: Router,
-    public access: AccessService,
-    private cdr: ChangeDetectorRef
+    public access: AccessService
   ) {}
 
   ngOnInit(): void {
@@ -85,9 +83,7 @@ export class PagosListComponent implements OnInit {
       next: (pagos) => {
         this.totalPagos = pagos.length;
         this.extractEmpresaOptions(pagos);
-        // Aplicar filtros iniciales después de cargar
         this.filteredPagos = this.applyFilters(pagos);
-        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error cargando pagos:', error);
@@ -146,14 +142,12 @@ export class PagosListComponent implements OnInit {
     this.pagosService.getPaymentsObservable().subscribe(pagos => {
       this.filteredPagos = this.applyFilters(pagos);
       this.first = 0; // Reset to first page when filtering
-      this.cdr.detectChanges();
     });
   }
 
   onPageChange(event: any): void {
     this.first = event.first;
     this.rows = event.rows;
-    this.cdr.detectChanges();
   }
 
   onDateRangeChange(): void {
@@ -232,16 +226,19 @@ export class PagosListComponent implements OnInit {
     this.router.navigate(['/pagos/form'], { queryParams: { id: pago.id, mode: 'edit' } });
   }
 
-  deletePago(pago: Pago): void {
+  deletePago(pago: Pago): void {    
     this.confirm.confirm({
-      message: `¿Estás seguro de que deseas eliminar el pago ${pago.id}?`,
+      message: `¿Estás seguro de que deseas eliminar el pago <strong>${pago.id}</strong>?<br><br>
+                <small class="text-muted">Esta acción no se puede deshacer.</small>`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sí, eliminar',
+      acceptLabel: 'Eliminar',
       rejectLabel: 'Cancelar',
       accept: () => {
+        console.log('Usuario confirmó eliminación de:', pago.id);
         this.pagosService.delete(pago.id).subscribe({
           next: () => {
+            console.log('Eliminación exitosa:', pago.id);
             this.msg.add({
               severity: 'success',
               summary: 'Eliminado',
@@ -249,7 +246,8 @@ export class PagosListComponent implements OnInit {
             });
             this.onFilterChange();
           },
-          error: () => {
+          error: (error) => {
+            console.error('Error al eliminar:', error);
             this.msg.add({
               severity: 'error',
               summary: 'Error',
@@ -257,6 +255,9 @@ export class PagosListComponent implements OnInit {
             });
           }
         });
+      },
+      reject: () => {
+        console.log('Usuario canceló la eliminación');
       }
     });
   }

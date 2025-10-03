@@ -18,23 +18,18 @@
 
       <!-- Usuario y Acciones -->
       <div class="flex items-center space-x-4">
-        <!-- Badge de Rol -->
+        <!-- Selector de Rol -->
         <div class="flex items-center space-x-2">
           <span class="text-sm text-gray-600">Rol:</span>
-          <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-            {{ userRole }}
-          </span>
+          <p-dropdown 
+            [options]="roleOptions" 
+            [(ngModel)]="selectedRole"
+            (onChange)="onRoleChange()"
+            placeholder="Seleccionar rol"
+            styleClass="w-48"
+            [showClear]="false">
+          </p-dropdown>
         </div>
-
-        <!-- Botón Crear Pago -->
-        <button *ngIf="access.canCreate()"
-                routerLink="/pagos/form" 
-                [queryParams]="{ mode: 'create' }"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center">
-          <i class="pi pi-plus mr-2"></i>
-          Crear Pago
-        </button>
-
       </div>
     </div>
   </div>

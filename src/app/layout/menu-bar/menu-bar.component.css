@@ -1,0 +1,78 @@
+/* Estilos para el selector de rol */
+:host ::ng-deep .p-dropdown {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+:host ::ng-deep .p-dropdown:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+:host ::ng-deep .p-dropdown:not(.p-disabled).p-focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-trigger {
+  padding: 0.5rem;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-trigger:hover {
+  color: #3b82f6;
+}
+
+/* Estilos para el panel del dropdown */
+:host ::ng-deep .p-dropdown-panel {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  background: #f3f4f6;
+  color: #3b82f6;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+/* Animación para el cambio de rol */
+.role-change-animation {
+  animation: roleChange 0.5s ease-in-out;
+}
+
+@keyframes roleChange {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
